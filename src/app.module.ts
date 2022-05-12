@@ -3,9 +3,10 @@ import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { MailController } from './mail/mail.controller';
-import { MailService } from './mail/mail.service';
 import { MailModule } from './mail/mail.module';
+import { DialogsModule } from './dialogs/dialogs.module';
+import { MessagesModule } from './messages/messages.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -18,8 +19,9 @@ import { MailModule } from './mail/mail.module';
     ),
     AuthModule,
     MailModule,
+    DialogsModule,
+    MessagesModule,
+    EventsModule,
   ],
-  controllers: [MailController],
-  providers: [MailService],
 })
 export class AppModule {}

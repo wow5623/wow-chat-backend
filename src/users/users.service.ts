@@ -42,8 +42,21 @@ export class UsersService {
     return user;
   }
 
-  getAllUsers() {
-    return this.userRepository.find();
+  async getAllUsers() {
+    const users = await this.userRepository.find();
+
+    if (!users) {
+      return new NotFoundException('Пользователи не найдены!');
+    }
+
+    return users.map((user) => {
+      return {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isEmailActivated: user.isEmailActivated,
+      };
+    });
   }
 
   async getUserByEmail(email: string) {
@@ -58,6 +71,10 @@ export class UsersService {
 
   async findUserByEmail(email: string) {
     return this.userRepository.findOne({ email });
+  }
+
+  async findUserById(userId: string) {
+    return this.userRepository.findById(userId);
   }
 
   async activateEmail(userId: string) {
@@ -75,6 +92,23 @@ export class UsersService {
 
     return this.userRepository.findOne({
       _id: user._id,
+    });
+  }
+
+  async getAllUsersExpectMe(user: UserDocument) {
+    const users = await this.userRepository.find({ _id: { $ne: user._id } });
+
+    if (!users) {
+      return new NotFoundException('Пользователи не найдены!');
+    }
+
+    return users.map((user) => {
+      return {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isEmailActivated: user.isEmailActivated,
+      };
     });
   }
 }

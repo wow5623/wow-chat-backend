@@ -18,30 +18,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  /*public async login(user: UserDocument) {
-    const payload = { email: user.email, name: user.name, sub: user._id };
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
-  }*/
-
-  public async login(dto: LoginUserDto) {
-    const user = await this.usersService.findUserByEmail(dto.email);
-    if (!user) {
-      throw new UnauthorizedException(
-        `Пользователя с email ${dto.email} не существует`,
-      );
-    }
-    const isPasswordsMatch = await AuthHelper.comparePasswords(
-      dto.password,
-      user.password,
-    );
-    if (!isPasswordsMatch) {
-      throw new UnauthorizedException('Неверный пароль');
-    }
+  public async login(user: UserDocument) {
     return {
       accessToken: this.generateUserToken(user),
       user: {
+        id: user.id,
         email: user.email,
         name: user.name,
       },
@@ -61,25 +42,27 @@ export class AuthService {
     return {
       accessToken: this.generateUserToken(user),
       user: {
+        id: user.id,
         email: user.email,
         name: user.name,
       },
     };
   }
 
-  public async validateToken(accessToken: string) {
+  public async validateToken(user: UserDocument) {
     try {
-      const user: UserDocument = await this.jwtService.verify(accessToken);
-
       if (!user) {
         throw new UnauthorizedException(
           'Пользователь с таким токеном не найден, вы не авторизованы!',
         );
       }
 
+      const accessToken = this.generateUserToken(user);
+
       return {
-        accessToken: accessToken,
+        accessToken,
         user: {
+          id: user.id,
           email: user.email,
           name: user.name,
         },
@@ -87,6 +70,23 @@ export class AuthService {
     } catch (err) {
       throw new UnauthorizedException('Токен невалиден, вы не авторизованы!');
     }
+  }
+
+  public async validateUser(loginUserDto: LoginUserDto): Promise<UserDocument> {
+    const user = await this.usersService.findUserByEmail(loginUserDto.email);
+    if (!user) {
+      throw new UnauthorizedException(
+        `Пользователя с email ${loginUserDto.email} не существует`,
+      );
+    }
+    const isPasswordsMatch = await AuthHelper.comparePasswords(
+      loginUserDto.password,
+      user.password,
+    );
+    if (!isPasswordsMatch) {
+      throw new UnauthorizedException('Неверный пароль');
+    }
+    return user;
   }
 
   private generateUserToken(user: UserDocument) {

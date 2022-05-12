@@ -23,7 +23,7 @@ export class User {
   @Prop({
     type: Boolean,
   })
-  isEmailActivated: string;
+  isEmailActivated: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
