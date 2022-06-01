@@ -9,6 +9,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { MailService } from '../mail/mail.service';
+import { v4 as generateUuid } from 'uuid';
+import { Response } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -33,10 +35,17 @@ export class UsersService {
       isEmailActivated: false,
     });
 
+    const emailActivationToken = this.generateEmailActivationToken();
+
+    user.emailActivationToken = emailActivationToken;
+    await user.save();
+
+    console.log(email, user.emailActivationToken);
+
     await this.mailService.sendMessage({
       to: email,
       subject: 'Активация email',
-      text: `Ссылка для активации: http://localhost:7777/users/activateEmail/${user._id}`,
+      text: `Ссылка для активации: http://localhost:7777/users/activateEmail/${user.emailActivationToken}`,
     });
 
     return user;
@@ -77,9 +86,9 @@ export class UsersService {
     return this.userRepository.findById(userId);
   }
 
-  async activateEmail(userId: string) {
+  async activateEmail(emailActivationToken: string, res: Response) {
     const user: UserDocument = await this.userRepository.findOne({
-      _id: userId,
+      emailActivationToken,
     });
 
     if (!user) {
@@ -90,9 +99,7 @@ export class UsersService {
       isEmailActivated: true,
     });
 
-    return this.userRepository.findOne({
-      _id: user._id,
-    });
+    return res.redirect('http://localhost:3000/');
   }
 
   async getAllUsersExpectMe(user: UserDocument) {
@@ -110,5 +117,9 @@ export class UsersService {
         isEmailActivated: user.isEmailActivated,
       };
     });
+  }
+
+  private generateEmailActivationToken(): string {
+    return generateUuid();
   }
 }

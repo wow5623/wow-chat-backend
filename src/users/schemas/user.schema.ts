@@ -24,6 +24,11 @@ export class User {
     type: Boolean,
   })
   isEmailActivated: boolean;
+
+  @Prop({
+    type: String,
+  })
+  emailActivationToken: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

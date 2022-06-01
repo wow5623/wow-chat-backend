@@ -28,6 +28,11 @@ export class Message {
     type: Date,
   })
   createdTime: Date;
+
+  @Prop({
+    type: Boolean,
+  })
+  isRead: boolean;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

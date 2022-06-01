@@ -9,7 +9,7 @@ export class MailService {
   async sendMessage(sendMessageDto: SendMessageDto) {
     return await this.mailerService.sendMail({
       to: sendMessageDto.to,
-      from: 'wowchatmailer@mail.ru',
+      from: 'wowchatbot@mail.ru',
       subject: sendMessageDto.subject,
       text: sendMessageDto.text,
     });

@@ -8,8 +8,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
   providers: [MailService],
   imports: [
     MailerModule.forRoot({
-      transport:
-        'smtps://wowchatmailer@mail.ru:FGW2KZ3cbkCKaHKH5sHD@smtp.mail.ru',
+      transport: 'smtps://wowchatbot@mail.ru:VhWYffegqtYVkqYSpfG4@smtp.mail.ru',
       defaults: {
         from: '"nest-modules" <modules@nestjs.com>',
       },

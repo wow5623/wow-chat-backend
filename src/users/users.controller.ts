@@ -6,6 +6,7 @@ import {
   Post,
   UseGuards,
   Request,
+  Response,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create.user.dto';
@@ -38,7 +39,7 @@ export class UsersController {
   }
 
   @Get('activateEmail/:userId')
-  activateEmail(@Param('userId') login: string) {
-    return this.usersService.activateEmail(login);
+  async activateEmail(@Param('userId') login: string, @Response() res) {
+    return this.usersService.activateEmail(login, res);
   }
 }

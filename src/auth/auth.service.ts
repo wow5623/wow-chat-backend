@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -32,7 +33,7 @@ export class AuthService {
   public async register(dto: CreateUserDto) {
     const candidate = await this.usersService.findUserByEmail(dto.email);
     if (!!candidate) {
-      throw new HttpException('Пользователь уже существует', HttpStatus.OK);
+      throw new BadRequestException('Пользователь уже существует');
     }
     const hashedPassword = await AuthHelper.hashPassword(dto.password);
     const user: UserDocument = await this.usersService.createUser({
@@ -65,6 +66,7 @@ export class AuthService {
           id: user.id,
           email: user.email,
           name: user.name,
+          isEmailActivated: user.isEmailActivated,
         },
       };
     } catch (err) {
